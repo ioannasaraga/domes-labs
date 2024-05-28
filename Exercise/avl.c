@@ -33,18 +33,76 @@ int avl_balance(AVLTree *node){
 //Function to perform a right rotation on a node
 AVLTree *avl_right_rotate(AVLTree *y){
     /* EXERCISE */
+
+ AVLTree * x=y->left;
+ if(x==NULL){
+    return y;
+ }
+ AVLTree * T2=x->right;
+ x->right=y;
+ y->left=T2;
+ y->height=max(avl_height(y->left),avl_height(y->right))+1;
+ x->height=max(avl_height(x->left),avl_height(x->right))+1;
+ return x;
 }
 
 //Function to perform a left rotation on a node
 AVLTree *avl_left_rotate(AVLTree *x){
     /* EXERCISE */
+
+ AVLTree * y=x->right;
+ if(y==NULL){
+    return x;
+ }
+ AVLTree *T2=y->left;
+ y->left=x;
+ x->right=T2;
+ x->height=max(avl_height(x->left),avl_height(x->right))+1;
+ y->height=max(avl_height(y->left),avl_height(y->right))+1;
+ return y;
+
 }
 
 //Function to insert a node in an AVL tree
 AVLTree *avl_insert(AVLTree *node, int key){
     /* EXERCISE */
+    if(node==NULL){
+        return avl_create_node(key);
+    }
+
+    if(key==node->key){
+        return node;
+    }
+
+    if(key>node->key){
+        node->right=avl_insert(node->right,key);
+    }
+    else{
+        node->left=avl_insert(node->left,key);
+    }
+
+ node->height=max(avl_height(node->left),avl_height(node->right))+1;
+
+int balance=avl_balance(node);
+
+if(balance>1 && key<node->left->key){
+    return avl_right_rotate(node);
+}
+else if(balance>1 && key>node->left->key){
+    node->left=avl_left_rotate(node->left);
+    return avl_right_rotate(node);
+}
+else if(balance<-1 && key>node->right->key){
+    return avl_left_rotate(node);
+}
+else if(balance<-1 && key<node->right->key){
+    node->right=avl_right_rotate(node->right);
+    return avl_left_rotate(node);
 }
 
+return node;
+
+}
 void avl_preorder(AVLTree *node){
     if(node!=NULL){
         printf("%d\n",node->key);
